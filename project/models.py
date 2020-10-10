@@ -9,6 +9,11 @@ class Formatter:
         postfix = '.png'
         return prefix + name + str(idx) + postfix
 
+    @staticmethod
+    def get_effect(name, idx):
+        effect = '_effect'
+        return Formatter.get_image(name+effect, idx)
+
 
 class Creature(Object, metaclass=ABCMeta):
     def __init__(self, x, y, scene):
@@ -28,9 +33,6 @@ class Creature(Object, metaclass=ABCMeta):
     def onMouseAction(self, x, y, action):
         self.handler.handle_action(self.x, self.y)
 
-    def is_bound(self, x, y):
-        return True if self.x == x and self.y == y else False
-
     @abstractmethod
     def action(self, x, y, damage):
         pass
@@ -44,19 +46,18 @@ class Monster(Creature):
         self.dist = 15
 
     def action(self, x, y, damage):
-        self.move()
-        # self.hp -= damage
-        # # print(str(self.x)+','+str(self.y)+' ('+str(self.hp)+')')
-        # if self.hp <= 0:
-        #     super().remove()
-        #     self.hide()
+        if self.x == x and self.y == y:
+            self.move()
+            self.hp -= damage
+            if self.hp <= 0:
+                super().remove()
+                self.hide()
 
     def move(self):
         self.x -= self.dist
         self.status = 3-self.status
         super().locate(self.scene, self.x, self.y)
         super().setImage(Formatter.get_image(self.img, self.status))
-        pass
 
 
 class Boss(Monster):
@@ -94,17 +95,40 @@ class Cannon(Creature):
         super().__init__(x, y, scene)
         self.img = 'cannon'
         self.status = 3
+        self.damage = 1
         super().setImage(Formatter.get_image(self.img, 3))
         super().locate(scene, self.x, self.y)
         super().show()
 
-    def is_bound(self, x, y):
-        return True
+    def onMouseAction(self, x, y, action):
+        pass
 
     def action(self, x, y, damage):
-        y_pos = 0
-        for i in range(5):
-            if y == y_pos:
-                self.status = i+1
-                super().setImage(Formatter.get_image(self.img, self.status))
-            y_pos += 140
+        self.status = int(y/140)+1
+        super().setImage(Formatter.get_image(self.img, self.status))
+        bomb = Bomb(x, y, self.img, self.scene)
+        bomb.start()
+
+
+class Bomb(Timer):
+    def __init__(self, x, y, img, scene):
+        self.delay = 0.09
+        super().__init__(self.delay)
+        self.count = 1
+        self.x = x-30
+        self.y = y
+        self.img = img
+        self.scene = scene
+        self.object= Object(Formatter.get_effect(img, self.count))
+        self.object.locate(self.scene, self.x, self.y)
+        self.object.show()
+
+    def onTimeout(self):
+        self.count += 1
+        aaa = Formatter.get_effect(self.img, self.count)
+        self.object.setImage(aaa)
+        if self.count < 4:
+            self.set(self.delay)
+            self.start()
+        else:
+            self.object.hide()

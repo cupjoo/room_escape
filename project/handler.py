@@ -1,16 +1,19 @@
 class EventHandler:
     def __init__(self):
-        self.creatures = []
+        self.tower = None
+        self.monsters = []
+
+    def add_tower(self, tower):
+        self.tower = tower
 
     def add_creature(self, creature):
         creature.add_handler(self)
-        self.creatures.append(creature)
+        self.monsters.append(creature)
 
     def remove_creature(self, creature):
-        self.creatures.remove(creature)
+        self.monsters.remove(creature)
 
     def handle_action(self, x, y):
-        print(str(x)+','+str(y)+' clicked (rem : '+str(len(self.creatures))+')')
-        for c in self.creatures:
-            if c.is_bound(x, y):
-                c.action(x, y, 2)
+        self.tower.action(x, y, 2)
+        for c in self.monsters:
+            c.action(x, y, self.tower.damage)
