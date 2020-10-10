@@ -90,15 +90,10 @@ class Zombie(Monster):
         super().show()
 
 
-class Cannon(Creature):
+class Tower(Creature):
     def __init__(self, x, y, scene):
         super().__init__(x, y, scene)
-        self.img = 'cannon'
         self.status = 3
-        self.damage = 1
-        super().setImage(Formatter.get_image(self.img, 3))
-        super().locate(scene, self.x, self.y)
-        super().show()
 
     def onMouseAction(self, x, y, action):
         pass
@@ -106,8 +101,27 @@ class Cannon(Creature):
     def action(self, x, y, damage):
         self.status = int(y/140)+1
         super().setImage(Formatter.get_image(self.img, self.status))
-        bomb = Bomb(x, y, self.img, self.scene)
-        bomb.start()
+        Bomb(x, y, self.img, self.scene).start()
+
+
+class Cannon(Tower):
+    def __init__(self, x, y, scene):
+        super().__init__(x, y, scene)
+        self.img = 'cannon'
+        self.damage = 1
+        super().setImage(Formatter.get_image(self.img, self.status))
+        super().locate(scene, self.x, self.y)
+        super().show()
+
+
+class Tank(Tower):
+    def __init__(self, x, y, scene):
+        super().__init__(x, y, scene)
+        self.img = 'tank'
+        self.damage = 3
+        super().setImage(Formatter.get_image(self.img, self.status))
+        super().locate(scene, self.x, self.y)
+        super().show()
 
 
 class Bomb(Timer):
@@ -125,8 +139,7 @@ class Bomb(Timer):
 
     def onTimeout(self):
         self.count += 1
-        aaa = Formatter.get_effect(self.img, self.count)
-        self.object.setImage(aaa)
+        self.object.setImage(Formatter.get_effect(self.img, self.count))
         if self.count < 4:
             self.set(self.delay)
             self.start()

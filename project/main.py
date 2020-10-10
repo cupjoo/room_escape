@@ -27,6 +27,6 @@ for i in range(2):
     handler.add_creature(Zombie(monster_x, monster_y, start_scene))
     monster_y += yd
 
-handler.add_tower(Cannon(cannon_x, cannon_y, start_scene))
+handler.add_tower(Tank(cannon_x, cannon_y, start_scene))
 
 startGame(start_scene)
