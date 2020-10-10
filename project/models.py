@@ -94,6 +94,8 @@ class Tower(Creature):
     def __init__(self, x, y, scene):
         super().__init__(x, y, scene)
         self.status = 3
+        self.size = 1.2
+        self.diff = 0
 
     def onMouseAction(self, x, y, action):
         pass
@@ -101,7 +103,7 @@ class Tower(Creature):
     def action(self, x, y, damage):
         self.status = int(y/140)+1
         super().setImage(Formatter.get_image(self.img, self.status))
-        Bomb(x, y, self.img, self.scene).start()
+        Bomb(x+self.diff, y, self.size, self.scene).start()
 
 
 class Cannon(Tower):
@@ -109,6 +111,8 @@ class Cannon(Tower):
         super().__init__(x, y, scene)
         self.img = 'cannon'
         self.damage = 1
+        self.size = 0.7
+        self.diff = -20
         super().setImage(Formatter.get_image(self.img, self.status))
         super().locate(scene, self.x, self.y)
         super().show()
@@ -119,22 +123,21 @@ class Tank(Tower):
         super().__init__(x, y, scene)
         self.img = 'tank'
         self.damage = 3
+        self.diff = -60
         super().setImage(Formatter.get_image(self.img, self.status))
         super().locate(scene, self.x, self.y)
         super().show()
 
 
 class Bomb(Timer):
-    def __init__(self, x, y, img, scene):
+    def __init__(self, x, y, size, scene):
         self.delay = 0.09
         super().__init__(self.delay)
         self.count = 1
-        self.x = x-30
-        self.y = y
-        self.img = img
-        self.scene = scene
-        self.object= Object(Formatter.get_effect(img, self.count))
-        self.object.locate(self.scene, self.x, self.y)
+        self.img = 'tower'
+        self.object = Object(Formatter.get_effect(self.img, self.count))
+        self.object.setScale(size)
+        self.object.locate(scene, x, y)
         self.object.show()
 
     def onTimeout(self):
