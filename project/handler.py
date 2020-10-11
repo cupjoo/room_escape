@@ -66,7 +66,7 @@ class EventHandler:
 class GameManager:
     def __init__(self, scene):
         self.scene = scene
-        self.wave = 3
+        self.wave = 1
         self.monsters = [
             [],
             [10, 0, 0],

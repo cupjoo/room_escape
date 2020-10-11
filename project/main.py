@@ -35,5 +35,3 @@ start_btn.onMouseAction = start_game
 exit_btn.onMouseAction = exit_game
 startGame(menu_scene)
 
-# TODO README 설명
-# TODO README 동영상 (캐논 / 탱크 구분)
