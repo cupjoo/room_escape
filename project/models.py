@@ -152,6 +152,7 @@ class Tower(Creature):
             self.damage = 2
             self.size = 1.2
             self.diff = -60
+            self.upgraded = True
             super().setImage(Formatter.get_image(self.img, self.status))
 
 

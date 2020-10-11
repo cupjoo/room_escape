@@ -4,11 +4,14 @@ import copy
 
 
 class EventHandler:
-    def __init__(self):
-        self.life = 220
+    def __init__(self, scene):
+        self.scene = scene
+        self.life = 10
         self.line = 220
         self.max_life = self.life
         self.tower = None
+        self.last_wave = False
+        self.last_count = 0
         self.monsters = []
 
     def add_tower(self, tower):
@@ -23,10 +26,19 @@ class EventHandler:
     def add_creature(self, creature):
         creature.add_handler(self)
         self.monsters.append(creature)
+        if self.last_wave:
+            self.last_count += 1
 
     def remove_creature(self, creature):
         creature.hide()
         self.monsters.remove(creature)
+        self.end_game()
+
+    def end_game(self):
+        if self.last_count == 10 and len(self.monsters) == 0:
+            text = Object(Formatter.get_image('cleared', ''))
+            text.locate(self.scene, 350, 230)
+            text.show()
 
     def handle_action(self, x, y):
         self.tower.action(x, y, 2)
@@ -36,6 +48,9 @@ class EventHandler:
     def stop_monsters(self):
         for c in self.monsters:
             c.stop()
+        text = Object(Formatter.get_image('gameover', ''))
+        text.locate(self.scene, 350, 230)
+        text.show()
 
     def has_no_life(self):
         return self.life <= 0
@@ -51,7 +66,7 @@ class EventHandler:
 class GameManager:
     def __init__(self, scene):
         self.scene = scene
-        self.wave = 1
+        self.wave = 3
         self.monsters = [
             [],
             [10, 0, 0],
@@ -62,7 +77,7 @@ class GameManager:
         ]
         self.mob_order = []
         self.pos_order = []
-        self.handler = EventHandler()
+        self.handler = EventHandler(scene)
         self.handler.add_tower(Tower(100, 280, self.scene))
 
     def generate_mob(self, idx):
@@ -92,9 +107,10 @@ class GameManager:
         random.shuffle(self.mob_order)
 
         # generate monsters in positions
-        self.upgrade_tower()
-        print(self.wave)
-        Generator(self).start()
+        if self.has_no_life() is False:
+            WaveText(self.wave, self.scene).start()
+            self.upgrade_tower()
+            Generator(self).start()
 
     def has_no_life(self):
         return self.handler.has_no_life()
@@ -102,11 +118,14 @@ class GameManager:
     def next_wave(self):
         if self.wave < 5:
             self.wave += 1
+            if self.wave == 5:
+                self.handler.last_wave = True
             self.random_generate()
 
     def upgrade_tower(self):
-        if self.handler.has_no_damage() and self.wave > 2:
-            self.handler.upgrade_tower()
+        if self.handler.has_no_damage() and self.wave >= 3:
+            if self.handler.tower.upgraded is False:
+                UpgradeText(self.scene, self.handler).start()
 
 
 class Generator(Timer):
@@ -125,3 +144,27 @@ class Generator(Timer):
         else:
             self.count = 0
             self.manager.next_wave()
+
+
+class WaveText(Timer):
+    def __init__(self, idx, scene):
+        self.text = Object(Formatter.get_image('wave', idx))
+        self.text.locate(scene, 450, 230)
+        self.text.show()
+        super().__init__(1.5)
+
+    def onTimeout(self):
+        self.text.hide()
+
+
+class UpgradeText(Timer):
+    def __init__(self, scene, handler):
+        self.handler = handler
+        self.text = Object(Formatter.get_image('upgrade', ''))
+        self.text.locate(scene, 30, 380)
+        self.text.show()
+        super().__init__(1)
+
+    def onTimeout(self):
+        self.text.hide()
+        self.handler.upgrade_tower()
