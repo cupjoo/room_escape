@@ -16,16 +16,16 @@ yd = 140
 cannon_x = 100
 cannon_y = 280
 
-for i in range(2):
-    handler.add_creature(Warrior(monster_x, monster_y, start_scene))
-    monster_y += yd
-
+handler.add_creature(Warrior(monster_x, monster_y, start_scene))
+monster_y += yd
+handler.add_creature(Zombie(monster_x, monster_y, start_scene))
+monster_y += yd
 handler.add_creature(Boss(monster_x, monster_y, start_scene))
 monster_y += yd
-
-for i in range(2):
-    handler.add_creature(Zombie(monster_x, monster_y, start_scene))
-    monster_y += yd
+handler.add_creature(Zombie(monster_x, monster_y, start_scene))
+monster_y += yd
+handler.add_creature(Warrior(monster_x, monster_y, start_scene))
+monster_y += yd
 
 handler.add_tower(Tank(cannon_x, cannon_y, start_scene))
 

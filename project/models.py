@@ -44,13 +44,19 @@ class Monster(Creature):
         self.hp = 0
         self.status = 1
         self.dist = 15
+        self.delay = 0
+        self.movement = None
+
+    def start(self):
+        self.movement = Movement(self, self.delay)
+        self.movement.start()
 
     def action(self, x, y, damage):
         if self.x == x and self.y == y:
-            self.move()
             self.hp -= damage
             if self.hp <= 0:
                 super().remove()
+                self.movement.stop()
                 self.hide()
 
     def move(self):
@@ -60,14 +66,29 @@ class Monster(Creature):
         super().setImage(Formatter.get_image(self.img, self.status))
 
 
+class Movement(Timer):
+    def __init__(self, monster, delay):
+        self.delay = delay
+        self.monster = monster
+        super().__init__(self.delay)
+
+    def onTimeout(self):
+        self.monster.move()
+        if True:
+            self.set(self.delay)
+            self.start()
+
+
 class Boss(Monster):
     def __init__(self, x, y, scene):
         super().__init__(x, y, scene)
         self.hp = 10
         self.img = 'boss'
+        self.delay = 0.3
         super().setImage(Formatter.get_image(self.img, 1))
         super().locate(scene, self.x, self.y)
         super().show()
+        super().start()
 
 
 class Warrior(Monster):
@@ -75,9 +96,11 @@ class Warrior(Monster):
         super().__init__(x, y, scene)
         self.hp = 3
         self.img = 'warrior'
+        self.delay = 0.25
         super().setImage(Formatter.get_image(self.img, 1))
         super().locate(scene, self.x, self.y)
         super().show()
+        super().start()
 
 
 class Zombie(Monster):
@@ -85,9 +108,11 @@ class Zombie(Monster):
         super().__init__(x, y, scene)
         self.hp = 1
         self.img = 'zombie'
+        self.delay = 0.5
         super().setImage(Formatter.get_image(self.img, 1))
         super().locate(scene, self.x, self.y)
         super().show()
+        super().start()
 
 
 class Tower(Creature):
