@@ -6,6 +6,10 @@
 
 ![2.png](docs/2.PNG)
 
+### How to run app
+
+Check the [migrated repository](https://github.com/cupjoo/tower-defense)
+
 ### 게임 규칙
 
 - 각 Wave 마다 몰려오는 적들을 대포로 맞춰 물리쳐야 한다.
@@ -19,3 +23,5 @@
 ![4.gif](docs/4.gif)
 
 ![5.gif](docs/5.gif)
+
+![6.gif](docs/6.gif)
